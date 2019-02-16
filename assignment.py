@@ -1,3 +1,5 @@
+# Group 8 - AI Assignment One
+
 # Essential imports
 from Tkinter import *
 import xml.etree.ElementTree as ET
@@ -51,12 +53,21 @@ class Path():
         dist = distance(node, gnode)
         elev = elevation(node, gnode)
 
-        if elev > 0:
-            return dist * 100
-        elif elev < 0:
-            return dist * .01
-        elif elev == 0:
+        # If flat, elevation has no effect
+        if elev <= 1 or elev >= -1:
             return dist
+
+        # If incline, increase cost
+        elif elev > 1 and elev <= 3:
+            return (dist * 3)
+
+        #If decline, reduce cost
+        elif elev < -1 and elev >= -3:
+            return (dist * 0.50)
+
+        # Discourages elevations if too steep
+        else:
+            return float('inf') 
 
     # A* Implementation
     def a_star(self,start,goal):
@@ -176,9 +187,6 @@ class MyWin(Frame):
             self.route()
 
     def route(self):
-        # Test difference between start to goal and goal to start trips using elevation
-        nodes,ways = self.path.a_star(self.goalnode, self.startnode)
-
         nodes,ways = self.path.a_star(self.startnode, self.goalnode)
         lastway = ""
         for wayname in ways:
